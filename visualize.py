@@ -9,9 +9,9 @@ plt.rcParams['keymap.save'] = ''
 plt.rcParams['keymap.fullscreen'] = '' 
 plt.rcParams['keymap.grid'] = ''       
 
-# =========================================================
+
 # 1. SETUP THÔNG SỐ KHỞI TẠO
-# =========================================================
+
 Kp_line = 7.0
 Kd_line = 45.0
 target_base_speed = 40
@@ -26,9 +26,9 @@ error_data = []
 
 start_time = None
 
-# =========================================================
+
 # 2. QUẢN LÝ KẾT NỐI BLUETOOTH
-# =========================================================
+
 SERIAL_PORT = '/dev/rfcomm0' 
 BAUD_RATE = 9600
 
@@ -112,9 +112,9 @@ def handle_disconnect():
         txt_motor.set_text("Xung Trai: [ -- ]  |  Xung Phai: [ -- ]  |  Sai so: [ -- ]")
         fig.canvas.draw_idle()
 
-# =========================================================
-# 3. GIAO DIỆN BỐ CỤC DARK THEME 
-# =========================================================
+
+# 3. GIAO DIỆN BỐ CỤC
+
 BG_COLOR = '#121212'        
 PANEL_COLOR = '#1e1e1e'     
 TEXT_COLOR = '#e0e0e0'      
@@ -125,10 +125,9 @@ fig = plt.figure(figsize=(14, 8))
 fig.canvas.manager.set_window_title("Tram Telemetry & Live-Tuning PID")
 fig.patch.set_facecolor(BG_COLOR) 
 
-# Chia làm 2 phần: HUD (trên) và Đồ thị Sai số (Dưới)
 gs = gridspec.GridSpec(2, 1, height_ratios=[1.2, 1.8], hspace=0.2)
 
-# --- 3.1. PHẦN TRÊN: BẢNG ĐIỀU KHIỂN (HUD) ---
+# --- BẢNG ĐIỀU KHIỂN ---
 ax_hud = fig.add_subplot(gs[0])
 ax_hud.set_facecolor(BG_COLOR)
 ax_hud.axis('off')
@@ -158,14 +157,14 @@ help_text = (
 ax_hud.text(0.99, 0.90, help_text, fontsize=10, ha='right', va='top', linespacing=1.6, family='monospace', color='#aaaaaa',
             bbox=dict(boxstyle="round,pad=0.5", facecolor=PANEL_COLOR, edgecolor='#555555', alpha=0.9))
 
-# --- 3.2. PHẦN DƯỚI: ĐỒ THỊ SAI SỐ (ERROR PLOT) ---
+# --- ĐỒ THỊ SAI SỐ ---
 ax_err = fig.add_subplot(gs[1])
 ax_err.set_facecolor(PANEL_COLOR)
 for spine in ax_err.spines.values(): spine.set_color(BORDER_COLOR)
 ax_err.tick_params(colors='#888888')
 ax_err.yaxis.label.set_color(TEXT_COLOR)
 ax_err.xaxis.label.set_color(TEXT_COLOR)
-ax_err.set_title("Do thi Sai So (Bao cao Vay Duoi)", fontsize=13, weight='bold', color=TEXT_COLOR)
+ax_err.set_title("Do thi Sai So", fontsize=13, weight='bold', color=TEXT_COLOR)
 ax_err.set_ylabel("Error (-2 to +2)", fontsize=11)
 ax_err.set_xlabel("Thoi gian (giay)", fontsize=11)
 ax_err.grid(True, linestyle='--', color='#333333')
@@ -174,12 +173,11 @@ ax_err.set_ylim(-2.5, 2.5)
 line_err, = ax_err.plot([], [], color='#ffcc00', linewidth=2.0, label="Current Error")
 ax_err.axhline(0, color='#00ff00', linestyle=':', linewidth=1.5, alpha=0.7) 
 
-# =========================================================
 connect_bluetooth()
 
-# =========================================================
+
 # 4. XỬ LÝ BÀN PHÍM
-# =========================================================
+
 current_key = None
 last_key_time = 0
 pending_stop = False
@@ -262,9 +260,9 @@ def on_key_release(event):
 fig.canvas.mpl_connect('key_press_event', on_key_press)
 fig.canvas.mpl_connect('key_release_event', on_key_release)
 
-# =========================================================
+
 # 5. VÒNG LẶP ĐỌC DATA & VẼ ĐỒ THỊ
-# =========================================================
+
 def update_gui(frame):
     global current_key, pending_stop, motor_L, motor_R, error_line, is_connected, start_time
 
@@ -282,15 +280,14 @@ def update_gui(frame):
             if raw_line:
                 line_data = raw_line.decode('utf-8', errors='ignore').strip()
                 data = line_data.split(',')
-                # Vẫn giữ nguyên phân tách 6 số để tương thích code C
+
                 if len(data) == 6:
                     try:
                         timestamp_ms = int(data[0])
-                        # Bỏ qua data[1], data[2], data[3], data[4] (PID động cơ)
                         error_val = float(data[5])
                         
-                        motor_L = int(data[2]) # Lấy tạm Actual L hiển thị text
-                        motor_R = int(data[4]) # Lấy tạm Actual R hiển thị text
+                        motor_L = int(data[2])
+                        motor_R = int(data[4])
                         error_line = error_val
                         
                         txt_motor.set_text(f"Xung Trai: [ {motor_L} ]  |  Xung Phai: [ {motor_R} ]  |  Sai so: [ {error_line} ]")
@@ -317,4 +314,3 @@ ani = FuncAnimation(fig, update_gui, interval=50, blit=False, save_count=150)
 plt.show()
 
 if ser and ser.is_open: ser.close()
-print("Da dong phan mem an toan.")
