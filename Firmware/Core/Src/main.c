@@ -150,7 +150,6 @@ int main(void)
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);
 
-	// ---> LỆNH BẮT BUỘC ĐỂ MỞ KHÓA ĐIỆN ÁP CHO TIM1 <---
 	__HAL_TIM_MOE_ENABLE(&htim1);
 
 	__HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, 0);
